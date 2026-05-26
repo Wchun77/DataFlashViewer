@@ -17,12 +17,18 @@
         {
             this.splitMain = new System.Windows.Forms.SplitContainer();
             this.panelLeft = new System.Windows.Forms.Panel();
+            this.lvRecords = new DataFlashViewer.DarkListView();
+            this.colRecIdx = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colSlot = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colOffset = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panelLeftTop = new System.Windows.Forms.Panel();
             this.lblRecordsTitle = new System.Windows.Forms.Label();
             this.panelRight = new System.Windows.Forms.Panel();
+            this.tvFields = new DataFlashViewer.DarkTreeView();
             this.panelRightTop = new System.Windows.Forms.Panel();
             this.lblDetailTitle = new System.Windows.Forms.Label();
             this.panelTop = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
             this.btnBrowseBin = new System.Windows.Forms.Button();
             this.txtBinFile = new System.Windows.Forms.TextBox();
             this.lblBinFile = new System.Windows.Forms.Label();
@@ -35,12 +41,6 @@
             this.lblStatNewest = new System.Windows.Forms.Label();
             this.lblStatRecords = new System.Windows.Forms.Label();
             this.lblStatSlots = new System.Windows.Forms.Label();
-            this.lvRecords = new DataFlashViewer.DarkListView();
-            this.colRecIdx = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.colSlot = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.colOffset = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.tvFields = new DataFlashViewer.DarkTreeView();
-            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitMain)).BeginInit();
             this.splitMain.Panel1.SuspendLayout();
             this.splitMain.Panel2.SuspendLayout();
@@ -84,6 +84,49 @@
             this.panelLeft.Size = new System.Drawing.Size(170, 550);
             this.panelLeft.TabIndex = 0;
             // 
+            // lvRecords
+            // 
+            this.lvRecords.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(26)))), ((int)(((byte)(26)))));
+            this.lvRecords.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lvRecords.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.colRecIdx,
+            this.colSlot,
+            this.colOffset});
+            this.lvRecords.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lvRecords.Font = new System.Drawing.Font("Consolas", 8.5F);
+            this.lvRecords.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(190)))), ((int)(((byte)(190)))), ((int)(((byte)(190)))));
+            this.lvRecords.FullRowSelect = true;
+            this.lvRecords.HeaderBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
+            this.lvRecords.HeaderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
+            this.lvRecords.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.lvRecords.HideSelection = false;
+            this.lvRecords.Location = new System.Drawing.Point(0, 30);
+            this.lvRecords.MultiSelect = false;
+            this.lvRecords.Name = "lvRecords";
+            this.lvRecords.OwnerDraw = true;
+            this.lvRecords.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(215)))));
+            this.lvRecords.SelectionForeColor = System.Drawing.Color.White;
+            this.lvRecords.ShowItemToolTips = true;
+            this.lvRecords.Size = new System.Drawing.Size(170, 520);
+            this.lvRecords.TabIndex = 0;
+            this.lvRecords.UseCompatibleStateImageBehavior = false;
+            this.lvRecords.View = System.Windows.Forms.View.Details;
+            // 
+            // colRecIdx
+            // 
+            this.colRecIdx.Text = "#";
+            this.colRecIdx.Width = 23;
+            // 
+            // colSlot
+            // 
+            this.colSlot.Text = "slot";
+            this.colSlot.Width = 40;
+            // 
+            // colOffset
+            // 
+            this.colOffset.Text = "offset";
+            this.colOffset.Width = 107;
+            // 
             // panelLeftTop
             // 
             this.panelLeftTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
@@ -119,6 +162,24 @@
             this.panelRight.Name = "panelRight";
             this.panelRight.Size = new System.Drawing.Size(1026, 550);
             this.panelRight.TabIndex = 0;
+            // 
+            // tvFields
+            // 
+            this.tvFields.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
+            this.tvFields.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.tvFields.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tvFields.Font = new System.Drawing.Font("Consolas", 9F);
+            this.tvFields.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(190)))), ((int)(((byte)(190)))), ((int)(((byte)(190)))));
+            this.tvFields.FullRowSelect = true;
+            this.tvFields.HideSelection = false;
+            this.tvFields.Indent = 16;
+            this.tvFields.ItemHeight = 22;
+            this.tvFields.Location = new System.Drawing.Point(0, 30);
+            this.tvFields.Name = "tvFields";
+            this.tvFields.ShowLines = false;
+            this.tvFields.ShowRootLines = false;
+            this.tvFields.Size = new System.Drawing.Size(1026, 520);
+            this.tvFields.TabIndex = 0;
             // 
             // panelRightTop
             // 
@@ -162,6 +223,20 @@
             this.panelTop.Padding = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.panelTop.Size = new System.Drawing.Size(1200, 78);
             this.panelTop.TabIndex = 2;
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(50)))));
+            this.button1.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
+            this.button1.Location = new System.Drawing.Point(35, 42);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(90, 22);
+            this.button1.TabIndex = 7;
+            this.button1.Text = "Test";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // btnBrowseBin
             // 
@@ -271,7 +346,7 @@
             this.lblStatNext.Name = "lblStatNext";
             this.lblStatNext.Size = new System.Drawing.Size(160, 40);
             this.lblStatNext.TabIndex = 0;
-            this.lblStatNext.Text = "Next data_addr\n—";
+            this.lblStatNext.Text = "Active block\n—";
             this.lblStatNext.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblStatNewest
@@ -307,83 +382,8 @@
             this.lblStatSlots.Name = "lblStatSlots";
             this.lblStatSlots.Size = new System.Drawing.Size(160, 40);
             this.lblStatSlots.TabIndex = 3;
-            this.lblStatSlots.Text = "Total slots\n—";
+            this.lblStatSlots.Text = "Slots in block\n—";
             this.lblStatSlots.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lvRecords
-            // 
-            this.lvRecords.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(26)))), ((int)(((byte)(26)))));
-            this.lvRecords.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.lvRecords.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.colRecIdx,
-            this.colSlot,
-            this.colOffset});
-            this.lvRecords.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lvRecords.Font = new System.Drawing.Font("Consolas", 8.5F);
-            this.lvRecords.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(190)))), ((int)(((byte)(190)))), ((int)(((byte)(190)))));
-            this.lvRecords.FullRowSelect = true;
-            this.lvRecords.HeaderBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
-            this.lvRecords.HeaderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
-            this.lvRecords.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.lvRecords.HideSelection = false;
-            this.lvRecords.Location = new System.Drawing.Point(0, 30);
-            this.lvRecords.MultiSelect = false;
-            this.lvRecords.Name = "lvRecords";
-            this.lvRecords.OwnerDraw = true;
-            this.lvRecords.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(215)))));
-            this.lvRecords.SelectionForeColor = System.Drawing.Color.White;
-            this.lvRecords.ShowItemToolTips = true;
-            this.lvRecords.Size = new System.Drawing.Size(170, 520);
-            this.lvRecords.TabIndex = 0;
-            this.lvRecords.UseCompatibleStateImageBehavior = false;
-            this.lvRecords.View = System.Windows.Forms.View.Details;
-            // 
-            // colRecIdx
-            // 
-            this.colRecIdx.Text = "#";
-            this.colRecIdx.Width = 23;
-            // 
-            // colSlot
-            // 
-            this.colSlot.Text = "slot";
-            this.colSlot.Width = 40;
-            // 
-            // colOffset
-            // 
-            this.colOffset.Text = "offset";
-            this.colOffset.Width = 107;
-            // 
-            // tvFields
-            // 
-            this.tvFields.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
-            this.tvFields.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.tvFields.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tvFields.Font = new System.Drawing.Font("Consolas", 9F);
-            this.tvFields.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(190)))), ((int)(((byte)(190)))), ((int)(((byte)(190)))));
-            this.tvFields.FullRowSelect = true;
-            this.tvFields.HideSelection = false;
-            this.tvFields.Indent = 16;
-            this.tvFields.ItemHeight = 22;
-            this.tvFields.Location = new System.Drawing.Point(0, 30);
-            this.tvFields.Name = "tvFields";
-            this.tvFields.ShowLines = false;
-            this.tvFields.ShowRootLines = false;
-            this.tvFields.Size = new System.Drawing.Size(1026, 520);
-            this.tvFields.TabIndex = 0;
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(50)))));
-            this.button1.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
-            this.button1.Location = new System.Drawing.Point(35, 42);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(90, 22);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "Test";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // FormM
             // 

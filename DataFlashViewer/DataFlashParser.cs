@@ -16,9 +16,11 @@ namespace DataFlashViewer
     public class DataFlashInfo
     {
         public int DataSize { get; set; }
-        public int DataLoopSize { get; set; }
-        public int NewestSlot { get; set; }
-        public int NextDataAddr { get; set; }
+        public int DataLoopSize { get; set; }   /* active block 內最大 slot 數 */
+        public int NewestSlot { get; set; }     /* active block 內最新 record 的 slot index */
+        public int NextDataAddr { get; set; }   /* 保留，EEL 下無意義，固定為 -1 */
+        public int ActiveBlock { get; set; }    /* 0~3，目前 EEL 正在寫的 block */
+        public int BlockSeq { get; set; }       /* active block 的 sequence counter */
         public List<FlashRecord> Records { get; set; }
     }
 
@@ -60,85 +62,89 @@ namespace DataFlashViewer
             0xb6, 0xe8, 0x0a, 0x54, 0xd7, 0x89, 0x6b, 0x35,
         };
 
+        private const int BLOCK_SIZE = 1024;
+        private const int RECORD_BASE = 4;
+        private const int NUM_BLOCKS = 4;
+
         public static DataFlashInfo Parse(string filePath, int dataSize)
         {
             byte[] raw = File.ReadAllBytes(filePath);
 
-            int dataLoopSize = raw.Length / dataSize;
-
-            // Scan all slots
-            bool[] valid = new bool[dataLoopSize];
-            for (int s = 0; s < dataLoopSize; s++)
-                valid[s] = IsSlotValid(raw, s, dataSize);
-
-            // Find data_addr = first EMPTY slot scanning forward from 0
-            // This is where the firmware will write next.
-            int dataAddr = -1;
-            for (int s = 0; s < dataLoopSize; s++)
+            /* 找 active block: raw[block_base+2] == 0xFF 且 raw[block_base] != 0xFF */
+            int activeBlock = -1;
+            int blockSeq = -1;
+            for (int b = 0; b < NUM_BLOCKS; b++)
             {
-                if (IsSlotEmpty(raw, s, dataSize)) { dataAddr = s; break; }
-            }
-            // If no empty slot found, all slots written — dataAddr wraps to 0
-            if (dataAddr < 0) dataAddr = 0;
-
-            // Newest slot = last written = one before dataAddr
-            int newestSlot = (dataAddr - 1 + dataLoopSize) % dataLoopSize;
-
-            // Step back past any INVALID slots to last VALID
-            int guard = 0;
-            while (!valid[newestSlot] && guard < dataLoopSize)
-            {
-                newestSlot = (newestSlot - 1 + dataLoopSize) % dataLoopSize;
-                guard++;
+                int bbase = b * BLOCK_SIZE;
+                byte seq = raw[bbase];
+                byte flag = raw[bbase + 2];
+                if (seq != 0xFF && flag == 0xFF)
+                {
+                    activeBlock = b;
+                    blockSeq = seq;
+                    break;
+                }
             }
 
-            if (!valid[newestSlot])
+            if (activeBlock < 0)
                 return new DataFlashInfo
                 {
                     DataSize = dataSize,
-                    DataLoopSize = dataLoopSize,
+                    DataLoopSize = 0,
                     NewestSlot = -1,
-                    NextDataAddr = dataAddr,
+                    NextDataAddr = -1,
+                    ActiveBlock = -1,
+                    BlockSeq = -1,
                     Records = new List<FlashRecord>()
                 };
 
-            int nextDataAddr = (newestSlot + 1) % dataLoopSize;
+            int blockBase = activeBlock * BLOCK_SIZE;
+            int maxSlots = (BLOCK_SIZE - RECORD_BASE) / dataSize;
 
-            // Reconstruct chronological order (oldest first):
-            // Start from newestSlot+1, walk forward one full loop,
-            // collect only VALID slots.
-            var ordered = new List<int>();
-            for (int i = 0; i < dataLoopSize; i++)
+            /* 從前往後掃 active block，跳過 slot 0（block header），收集所有非全FF的 record
+             * EEL 往低位址 append，所以最前面那筆是最新的 */
+            var slotOffsets = new List<int>();
+            for (int i = 1; i < maxSlots; i++)
             {
-                int s = (newestSlot + 1 + i) % dataLoopSize;
-                if (valid[s]) ordered.Add(s);
+                int off = blockBase + RECORD_BASE + i * dataSize;
+                if (off + dataSize > raw.Length) break;
+                if (!IsBlockAllFF(raw, off, dataSize))
+                    slotOffsets.Add(off);
             }
 
-            // Build record list (index 0 = oldest)
+            /* slotOffsets[0] = newest，往後是歷史
+             * 建立 record list: index 0 = oldest（反轉），newest 在最後 */
             var records = new List<FlashRecord>();
-            for (int i = 0; i < ordered.Count; i++)
+            for (int i = slotOffsets.Count - 1; i >= 0; i--)
             {
-                int slot = ordered[i];
-                int off = slot * dataSize;
+                int off = slotOffsets[i];
                 var payload = new byte[dataSize];
                 Array.Copy(raw, off, payload, 0, dataSize);
 
+                bool crcOk = IsSlotValidByOffset(raw, off, dataSize);
+
                 records.Add(new FlashRecord
                 {
-                    RecordIndex = i,
-                    SlotIndex = slot,
+                    RecordIndex = slotOffsets.Count - 1 - i,
+                    SlotIndex = (off - blockBase - RECORD_BASE) / dataSize,
                     ByteOffset = off,
                     Payload = payload,
-                    CrcValid = valid[slot]
+                    CrcValid = crcOk
                 });
             }
+
+            int newestSlot = slotOffsets.Count > 0
+                ? (slotOffsets[0] - blockBase - RECORD_BASE) / dataSize
+                : -1;
 
             return new DataFlashInfo
             {
                 DataSize = dataSize,
-                DataLoopSize = dataLoopSize,
+                DataLoopSize = maxSlots - 1,
                 NewestSlot = newestSlot,
-                NextDataAddr = nextDataAddr,
+                NextDataAddr = -1,
+                ActiveBlock = activeBlock,
+                BlockSeq = blockSeq,
                 Records = records
             };
         }
@@ -149,6 +155,21 @@ namespace DataFlashViewer
             for (int i = 0; i < length; i++)
                 crc = CrcTable[crc ^ data[i]];
             return crc;
+        }
+
+        private static bool IsBlockAllFF(byte[] raw, int offset, int length)
+        {
+            for (int i = 0; i < length; i++)
+                if (raw[offset + i] != 0xFF) return false;
+            return true;
+        }
+
+        private static bool IsSlotValidByOffset(byte[] raw, int offset, int dataSize)
+        {
+            if (IsBlockAllFF(raw, offset, dataSize)) return false;
+            byte stored = raw[offset + dataSize - 1];
+            byte calc = Crc8(raw, offset, dataSize - 1);
+            return stored == calc;
         }
 
         private static bool IsSlotEmpty(byte[] raw, int slot, int dataSize)
@@ -163,7 +184,6 @@ namespace DataFlashViewer
         {
             int off = slot * dataSize;
 
-            // Empty slot check
             bool allFF = true;
             for (int i = 0; i < dataSize; i++)
                 if (raw[off + i] != 0xFF) { allFF = false; break; }

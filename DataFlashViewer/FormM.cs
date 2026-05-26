@@ -30,6 +30,68 @@ namespace DataFlashViewer
             lvRecords.SelectedIndexChanged += LvRecords_SelectedIndexChanged;
             btnBrowseH.Click += BtnBrowseH_Click;
             btnBrowseBin.Click += BtnBrowseBin_Click;
+
+            txtHFile.AllowDrop = true;
+            txtBinFile.AllowDrop = true;
+            txtHFile.DragEnter += TxtHFile_DragEnter;
+            txtHFile.DragDrop += TxtHFile_DragDrop;
+            txtBinFile.DragEnter += TxtBinFile_DragEnter;
+            txtBinFile.DragDrop += TxtBinFile_DragDrop;
+        }
+
+        // ---------------------------------------------------------------
+        // Drag and drop handlers
+        // ---------------------------------------------------------------
+
+        private void TxtHFile_DragEnter(object sender, DragEventArgs e)
+        {
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (files.Length == 1 && Path.GetExtension(files[0]).ToLower() == ".h")
+                e.Effect = DragDropEffects.Copy;
+        }
+
+        private void TxtHFile_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (files.Length != 1) return;
+            try
+            {
+                _fields = HFileParser.Parse(files[0]);
+                txtHFile.Text = files[0];
+                TryRefresh();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to parse .h file:\n" + ex.Message,
+                                "Parse Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void TxtBinFile_DragEnter(object sender, DragEventArgs e)
+        {
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (files.Length == 1 && Path.GetExtension(files[0]).ToLower() == ".bin")
+                e.Effect = DragDropEffects.Copy;
+        }
+
+        private void TxtBinFile_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (files.Length != 1) return;
+            try
+            {
+                int dataSize = DetectDataSize(files[0]);
+                _flash = DataFlashParser.Parse(files[0], dataSize);
+                txtBinFile.Text = files[0];
+                TryRefresh();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to parse .bin file:\n" + ex.Message,
+                                "Parse Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         // ---------------------------------------------------------------
@@ -106,11 +168,13 @@ namespace DataFlashViewer
 
         private void UpdateStats()
         {
-            lblStatSlots.Text = string.Format("Total slots\n{0}", _flash.DataLoopSize);
+            lblStatSlots.Text = string.Format("Slots in block\n{0}", _flash.DataLoopSize);
             lblStatRecords.Text = string.Format("Valid records\n{0}", _flash.Records.Count);
             lblStatNewest.Text = string.Format("Newest slot\n{0}",
                                       _flash.NewestSlot >= 0 ? _flash.NewestSlot.ToString() : "—");
-            lblStatNext.Text = string.Format("Next data_addr\n{0}", _flash.NextDataAddr);
+            lblStatNext.Text = string.Format("Active block\n{0}  (seq={1})",
+                                      _flash.ActiveBlock >= 0 ? _flash.ActiveBlock.ToString() : "—",
+                                      _flash.BlockSeq >= 0 ? _flash.BlockSeq.ToString() : "—");
         }
 
         // ---------------------------------------------------------------
