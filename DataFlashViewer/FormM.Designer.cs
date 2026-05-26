@@ -28,7 +28,6 @@
             this.panelRightTop = new System.Windows.Forms.Panel();
             this.lblDetailTitle = new System.Windows.Forms.Label();
             this.panelTop = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
             this.btnBrowseBin = new System.Windows.Forms.Button();
             this.txtBinFile = new System.Windows.Forms.TextBox();
             this.lblBinFile = new System.Windows.Forms.Label();
@@ -209,7 +208,6 @@
             // panelTop
             // 
             this.panelTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            this.panelTop.Controls.Add(this.button1);
             this.panelTop.Controls.Add(this.btnBrowseBin);
             this.panelTop.Controls.Add(this.txtBinFile);
             this.panelTop.Controls.Add(this.lblBinFile);
@@ -223,20 +221,6 @@
             this.panelTop.Padding = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.panelTop.Size = new System.Drawing.Size(1200, 78);
             this.panelTop.TabIndex = 2;
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(50)))));
-            this.button1.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
-            this.button1.Location = new System.Drawing.Point(35, 42);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(90, 22);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "Test";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // btnBrowseBin
             // 
@@ -442,6 +426,5 @@
         private System.Windows.Forms.Label lblStatNewest;
         private System.Windows.Forms.Label lblStatNext;
         private DarkTreeView tvFields;
-        private System.Windows.Forms.Button button1;
     }
 }

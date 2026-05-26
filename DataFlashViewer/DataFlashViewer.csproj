@@ -62,6 +62,9 @@
     <Compile Include="DataSizeInputForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="DataSizeInputForm.Designer.cs">
+      <DependentUpon>DataSizeInputForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormM.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -71,6 +74,9 @@
     <Compile Include="HFileParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="DataSizeInputForm.resx">
+      <DependentUpon>DataSizeInputForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormM.resx">
       <DependentUpon>FormM.cs</DependentUpon>
     </EmbeddedResource>
